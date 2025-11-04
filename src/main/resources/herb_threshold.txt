@@ -1,0 +1,4 @@
+# 温湿度阈值配置
+# 超过阈值将触发界面告警
+temperature=28
+humidity=75
