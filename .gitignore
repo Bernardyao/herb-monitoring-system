@@ -21,3 +21,6 @@ build/
 # temp files
 *.tmp
 *.bak   
+
+# scgript files
+*.bat
