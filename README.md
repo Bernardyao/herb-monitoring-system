@@ -1,192 +1,113 @@
-# 中药种植监控系统 - Quick Start
+# 中药种植监控系统 - 快速开始 / Quick Start
 
 ## 环境要求 / Prerequisites
 - JDK 17 或更高版本
-- 无需 Maven（使用 javac 直接编译）
+- Maven 3.6+（建议用于构建和打包，Windows PowerShell 下运行）
+
+## GitHub 仓库
+- 仓库地址: https://github.com/Bernardyao/herb-monitoring-system
 
 ## 项目结构 / Project Structure
 ```
 hw6/
-├── src/main/java/              # Java source code
+├── src/main/java/              # Java 源代码
 │   └── com/herbs/monitoring/
-│       ├── AppLauncher.java    # Main entry point
-│       ├── dao/                # Database access layer
-│       ├── model/              # Data models
-│       ├── sensor/             # Sensor simulation
-│       ├── service/            # Business logic
-│       └── ui/                 # Swing UI components
-├── src/main/resources/         # Configuration files
-│   └── herb_threshold.txt      # Alert thresholds
-├── lib/                        # External libraries
-├── data/                       # Database files
-├── compile.bat                 # Compile script
-└── run.bat                     # Run main application
+├── src/main/resources/         # 资源文件（阈值配置）
+│   └── herb_threshold.txt
+├── lib/                        # 可放置本地依赖（已使用 Maven 管理依赖）
+├── data/                       # 运行时生成的数据库文件
+├── compile.bat                 # 旧的编译脚本（保留）
+├── run.bat                     # 旧的运行脚本（保留）
+└── pom.xml                     # Maven 项目描述文件
 ```
 
-## 快速开始 / Quick Start
+## 使用说明 / How to build & run (PowerShell)
 
-### 1. 编译项目 / Compile
-```bash
-compile.bat
+### 1) 使用 Maven 编译
+在项目根目录（包含 `pom.xml`）运行：
+
+```powershell
+mvn clean compile
 ```
 
-### 2. 运行程序 / Run Application
-```bash
-run.bat
+### 2) 使用 Maven 打包（生成包含依赖的可执行 JAR）
+这会在 `target/` 下生成两个 JAR 文件，其中 `-jar-with-dependencies.jar` 包含所有依赖：
+
+```powershell
+mvn clean package
 ```
 
-**Login Credentials:**
-- Username: `admin`
-- Password: `admin`
+生成文件示例：
+- `target/herb-monitoring-system-1.0.0.jar` (仅项目代码)
+- `target/herb-monitoring-system-1.0.0-jar-with-dependencies.jar` (包含所有依赖，可直接运行)
+
+### 3) 运行打包后的程序
+
+```powershell
+# 直接运行包含依赖的可执行 JAR
+java -jar target\herb-monitoring-system-1.0.0-jar-with-dependencies.jar
+```
+
+### 4) 如果需要直接用 Maven 运行（不打包）
+
+```powershell
+mvn exec:java
+```
+
+**默认登录账号**: `admin` / `admin`
 
 ## 主要功能 / Main Features
+- 登录界面 (LoginFrame)
+- 传感器 CRUD（新增/修改/删除/刷新）
+- 手动采集传感器数据
+- 周期性采集与阈值告警
 
-### Feature 1: Login Interface (Experiment 1)
-- Enter username and password
-- Click "Login" button
-- Observe window transition to main interface
+## 配置（阈值）
+编辑 `src/main/resources/herb_threshold.txt`：
 
-### Feature 2: CRUD Operations (Experiment 3)
-- **Add**: Click "新增" to add new sensor
-- **Edit**: Select a row, click "修改" to modify
-- **Delete**: Select a row, click "删除" to remove
-- **Refresh**: Click "刷新" to reload table
-
-### Feature 3: Manual Data Collection (Experiment 4)
-1. Select sensor type from dropdown (Temperature/Humidity)
-2. Enter sensor ID (e.g., TEMP-001)
-3. Click "采集传感器数据"
-4. View popup with collected data
-5. Check database to verify data persistence
-
-### Feature 4: Periodic Collection & Alerts (Experiment 5)
-1. Select sensor type and ID
-2. Click "启动周期采集" to start (5-second interval)
-3. System automatically collects data
-4. When threshold exceeded, alert popup appears
-5. Click "停止周期采集" to stop
-
-## Key Learning Points
-
-### 1. Abstract Class Pattern (AbstractSensor)
-```java
-// Template method defines the process
-public SensorReading collect() {
-    double value = collectData(random);  // Subclass implements
-    // Store to database
-    // Notify callbacks
-    return reading;
-}
+```properties
+temperature=28  # 温度超过 28°C 时告警
+humidity=75     # 湿度超过 75% 时告警
 ```
 
-### 2. Thread vs Runnable
-- **Thread**: `class Generator extends Thread`
-- **Runnable**: `class Generator implements Runnable`
-- Runnable is more flexible (can extend other classes)
+## 数据库
+SQLite 数据库文件位于：`data/herb-monitor.db`（程序首次运行时会自动创建）
 
-### 3. Swing UI Threading
-```java
-// Long task in background thread
-executor.submit(() -> {
-    sensor.collect();
-    // Update UI on EDT
-    SwingUtilities.invokeLater(() -> {
-        JOptionPane.showMessageDialog(...);
-    });
-});
-```
+查看数据（示例）：
 
-### 4. Timer for Periodic Tasks
-```java
-Timer timer = new Timer(true);  // daemon thread
-timer.scheduleAtFixedRate(task, 0, 5000);  // every 5 seconds
-```
-
-## Database
-
-SQLite database automatically created at: `data/herb-monitor.db`
-
-**Tables:**
-- `sensor`: Sensor metadata (id, type, location, protocol)
-- `sensor_monitor`: Collected data (sensor_id, value, timestamp)
-
-**View data:**
-```bash
-sqlite3 data/herb-monitor.db
-SELECT * FROM sensor;
+```powershell
+# 在 Windows 上可以使用 sqlite3 工具查看
+sqlite3 data\herb-monitor.db
+SELECT * FROM sensor ORDER BY id LIMIT 10;
 SELECT * FROM sensor_monitor ORDER BY collect_time DESC LIMIT 10;
 ```
 
-## Configuration
+## 常见问题排查（Troubleshooting）
+- 若编译失败，确认 JDK 与 Maven 版本： `java -version`、`mvn -version`
+- 若 UI 无法启动，查看控制台错误并确保主类为 `com.herbs.monitoring.AppLauncher`
+- 如出现数据库错误，可删除 `data/` 目录重试（会重建数据库）
 
-Edit `src/main/resources/herb_threshold.txt`:
-```properties
-temperature=28  # Alert when temperature > 28°C
-humidity=75     # Alert when humidity > 75%
+## Git & GitHub
+- 我已将项目推送到： https://github.com/Bernardyao/herb-monitoring-system
+- 常用 Git 命令：
+
+```powershell
+# 初始化（已完成）
+git init
+# 添加远程（若未设置）
+# git remote add origin https://github.com/<your-user>/herb-monitoring-system.git
+# 推送到 main 分支
+git branch -M main
+git push -u origin main
 ```
 
-## Troubleshooting
-
-**Q: Compilation fails?**
-- Check Java version: `java -version` (should be 17+)
-- Check Maven: `mvn -version`
-- Clean build: `mvn clean compile`
-
-**Q: UI doesn't appear?**
-- Ensure you're running `AppLauncher` as main class
-- Check console for error messages
-
-**Q: Database errors?**
-- Delete `data/` folder to reset
-- Restart application
-
-**Q: Chinese characters display incorrectly?**
-- Maven handles encoding automatically
-- POM configured with UTF-8
-
-## Next Steps
-
-1. **Modify Thresholds**: Change values in `herb_threshold.txt`
-2. **Add New Sensor Type**: Extend `AbstractSensor`
-3. **Improve UI**: Customize `MainFrame.java`
-4. **Add Charts**: Integrate data visualization library
-
-## Project Architecture
-
-```
-┌─────────────┐
-│ LoginFrame  │ Login UI
-└──────┬──────┘
-       │ success
-       ▼
-┌─────────────┐
-│  MainFrame  │ Main UI (CRUD + Collection)
-└──────┬──────┘
-       │ uses
-       ▼
-┌──────────────┐      ┌────────────────┐
-│SensorService │◄─────│ AbstractSensor │ Sensor Simulation
-└──────┬───────┘      │  - Temperature │
-       │              │  - Humidity    │
-       ▼              └────────────────┘
-┌──────────────┐
-│  SensorDao   │ Database Access
-└──────┬───────┘
-       │
-       ▼
-┌──────────────┐
-│   DBUtil     │ SQLite Connection
-└──────────────┘
-```
-
-## Experiment Checklist
-
-- [ ] Experiment 1: Login UI works
-- [ ] Experiment 2: CRUD operations complete
-- [ ] Experiment 3: Manual collection works
-- [ ] Experiment 4: Periodic collection + alerts work
+## 开发建议 / Next Steps
+- 修改阈值文件观察告警行为
+- 添加新的传感器类型（继承 `AbstractSensor`）
+- 改进 UI 布局或加入图表展示
 
 ---
 
+更多详细的学习教程请参阅：`学习指南.md`
+
 Happy Learning! 🎓
-For detailed Chinese guide, see: 学习指南.md
