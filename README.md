@@ -10,15 +10,40 @@
 ## 项目结构 / Project Structure
 ```
 hw6/
-├── src/main/java/              # Java 源代码
-│   └── com/herbs/monitoring/
-├── src/main/resources/         # 资源文件（阈值配置）
+├── src/main/java/com/herbs/monitoring/
+│   ├── AppLauncher.java
+│   ├── dao/
+│   │   ├── DBUtil.java
+│   │   ├── SensorDao.java
+│   │   └── SensorDataDao.java
+│   ├── model/
+│   │   ├── SensorRecord.java
+│   │   └── SensorDataRecord.java
+│   ├── sensor/
+│   │   ├── AbstractSensor.java
+│   │   ├── TemperatureSensor.java
+│   │   ├── HumiditySensor.java
+│   │   ├── SensorFactory.java
+│   │   ├── SensorDataCallback.java
+│   │   ├── generator/
+│   │   │   ├── RunnableSensorGenerator.java
+│   │   │   └── ThreadSensorGenerator.java
+│   │   └── model/
+│   │       └── SensorReading.java
+│   ├── service/
+│   │   ├── SensorService.java
+│   │   └── ThresholdService.java
+│   └── ui/
+│       ├── LoginFrame.java
+│       ├── MainFrame.java
+│       └── SensorTableModel.java
+├── src/main/resources/
 │   └── herb_threshold.txt
-├── lib/                        # 可放置本地依赖（已使用 Maven 管理依赖）
-├── data/                       # 运行时生成的数据库文件
-├── compile.bat                 # 旧的编译脚本（保留）
-├── run.bat                     # 旧的运行脚本（保留）
-└── pom.xml                     # Maven 项目描述文件
+├── data/                       # 运行时数据库（herb-monitor.db）
+├── target/                     # Maven 构建输出
+├── pom.xml
+├── README.md
+└── 学习指南.md
 ```
 
 ## 使用说明 / How to build & run (PowerShell)
