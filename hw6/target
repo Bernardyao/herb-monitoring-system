@@ -1,1 +1,0 @@
-The `target` directory is typically used by Maven to store compiled classes and packaged applications. It does not require any specific content as it is generated during the build process. Therefore, this directory is intentionally left blank.
