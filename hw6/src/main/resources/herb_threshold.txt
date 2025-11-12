@@ -1,0 +1,2 @@
+temperature=28  # 温度超过28℃告警
+humidity=75     # 湿度超过75%告警

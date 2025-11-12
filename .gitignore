@@ -1,26 +1,49 @@
-# Java build files
-*.class
+# Maven
 target/
-*.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
-# IDE files
+# Database
+data/*.db
+data/*.db-journal
+
+# IDE
 .vscode/
 .idea/
 *.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
 
-# log files
-*.log
-
-# os files
+# OS
 .DS_Store
 Thumbs.db
 
-# build files
-build/  
+# Java
+*.class
+*.log
+*.jar
+!lib/*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
-# temp files
+# Temporary files
 *.tmp
-*.bak   
+*.bak
+*.swp
+*~
 
-# scgript files
-*.bat
+# Build files
+build/
